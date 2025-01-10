@@ -1,0 +1,88 @@
+    <div class="slider-container">
+        <div class="slides">
+            <div class="slide">
+                <img src="https://v3events.in/blog/wp-content/uploads/2020/10/Wedding-Planner-1.jpg" alt="Image 1">
+            </div>
+            <div class="slide">
+                <img src="public/images/weding1.jpg" alt="Image 2">
+            </div>
+            <div class="slide">
+                <img src="public/images/weding2.webp" alt="Image 3">
+            </div>
+            <div class="slide">
+                <img src="public/images/reception1.jpg" alt="Image 4">
+            </div>
+            <div class="slide">
+                <img src="public/images/reception.jpg" alt="Image 5">
+            </div>
+            <div class="slide">
+                <img src="/api/placeholder/800/400" alt="Image 6">
+            </div>
+            <div class="slide">
+                <img src="/api/placeholder/800/400" alt="Image 7">
+            </div>
+            <div class="slide">
+                <img src="/api/placeholder/800/400" alt="Image 8">
+            </div>
+            <div class="slide">
+                <img src="/api/placeholder/800/400" alt="Image 9">
+            </div>
+            <div class="slide">
+                <img src="/api/placeholder/800/400" alt="Image 10">
+            </div>
+            <div class="slide">
+                <img src="/api/placeholder/800/400" alt="Image 11">
+            </div>
+        </div>
+        
+        <button class="nav-button prev">❮</button>
+        <button class="nav-button next">❯</button>
+        
+        <div class="dots-container">
+            <span class="dot" onclick="currentSlide(1)"></span>
+            <span class="dot" onclick="currentSlide(2)"></span>
+            <span class="dot" onclick="currentSlide(3)"></span>
+            <span class="dot" onclick="currentSlide(4)"></span>
+            <span class="dot" onclick="currentSlide(5)"></span>
+            <span class="dot" onclick="currentSlide(6)"></span>
+            <span class="dot" onclick="currentSlide(7)"></span>
+            <span class="dot" onclick="currentSlide(8)"></span>
+            <span class="dot" onclick="currentSlide(9)"></span>
+            <span class="dot" onclick="currentSlide(10)"></span>
+            <span class="dot" onclick="currentSlide(11)"></span>
+        </div>
+    </div>
+
+    <script>
+        let slideIndex = 1;
+        const slides = document.querySelector('.slides');
+        const dots = document.querySelectorAll('.dot');
+        const totalSlides = document.querySelectorAll('.slide').length;
+
+        // Next/previous controls
+        document.querySelector('.prev').addEventListener('click', () => changeSlide(-1));
+        document.querySelector('.next').addEventListener('click', () => changeSlide(1));
+
+        function changeSlide(direction) {
+            slideIndex = (slideIndex + direction + totalSlides) % totalSlides || totalSlides;
+            updateSlider();
+        }
+
+        function currentSlide(n) {
+            slideIndex = n;
+            updateSlider();
+        }
+
+        function updateSlider() {
+            slides.style.transform = `translateX(${-(slideIndex - 1) * 100}%)`;
+            
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index + 1 === slideIndex);
+            });
+        }
+
+        // Initialize
+        updateSlider();
+    </script>
+
+

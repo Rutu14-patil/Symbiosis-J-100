@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event </title>
+    
+</head>
+<body>
+    <div class="container">
+        <form id="eventForm">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Customer Name</label>
+                    <input type="text" name="customerName" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label>Event Type</label>
+                    <select name="eventType">
+                        <option value="wedding">Wedding</option>
+                        <option value="corporate">Corporate Event</option>
+                        <option value="birthday">Birthday Party</option>
+                        <option value="social">Social Gathering</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Number of Guests</label>
+                    <input type="number" name="guests" min="10" value="50" required>
+                </div>
+                <div class="form-group">
+                    <label>Event Date</label>
+                    <input type="date" name="date" required>
+                </div>
+                <div class="form-group">
+                    <label>Venue Type</label>
+                    <select name="venue">
+                        <option value="indoor">Indoor</option>
+                        <option value="outdoor">Outdoor</option>
+                        <option value="hybrid">Hybrid</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Duration (hours)</label>
+                    <input type="number" name="duration" min="4" value="4" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Additional Services</label>
+                <div class="addons-grid">
+                    <div class="addon-item">
+                        <input type="checkbox" name="addons" value="catering">
+                        <span>Catering</span>
+                    </div>
+                    <div class="addon-item">
+                        <input type="checkbox" name="addons" value="decoration">
+                        <span>Decoration</span>
+                    </div>
+                    <div class="addon-item">
+                        <input type="checkbox" name="addons" value="photography">
+                        <span>Photography</span>
+                    </div>
+                    <div class="addon-item">
+                        <input type="checkbox" name="addons" value="entertainment">
+                        <span>Entertainment</span>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit">Generate Quotation</button>
+        </form>
+
+        <div id="quotation" class="quotation">
+            <h2>Event Quotation</h2>
+            <div class="quotation-grid">
+                <div class="quotation-item">
+                    <p>Customer Name:</p>
+                    <p id="quoteCustomerName"></p>
+                </div>
+                <div class="quotation-item">
+                    <p>Event Type:</p>
+                    <p id="quoteEventType"></p>
+                </div>
+                <div class="quotation-item">
+                    <p>Date:</p>
+                    <p id="quoteDate"></p>
+                </div>
+                <div class="quotation-item">
+                    <p>Venue Type:</p>
+                    <p id="quoteVenue"></p>
+                </div>
+                <div class="quotation-item">
+                    <p>Number of Guests:</p>
+                    <p id="quoteGuests"></p>
+                </div>
+                <div class="quotation-item">
+                    <p>Duration:</p>
+                    <p id="quoteDuration"></p>
+                </div>
+            </div>
+
+            <div id="quoteAddons">
+                <h3>Selected Add-ons:</h3>
+                <ul class="addons-list" id="quoteAddonsList"></ul>
+            </div>
+
+            <div class="total-cost">
+                <h3>Total Estimated Cost: $<span id="quoteTotalCost"></span></h3>
+                <p><small>* This is an estimated cost. Final pricing may vary based on specific requirements.</small></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const eventPricing = {
+            basePrice: {
+                wedding: 2000,
+                corporate: 1500,
+                birthday: 1000,
+                social: 800
+            },
+            venuePrice: {
+                indoor: 500,
+                outdoor: 800,
+                hybrid: 1000
+            },
+            addons: {
+                catering: 25,
+                decoration: 500,
+                photography: 400,
+                entertainment: 600
+            }
+        };
+
+        function calculateTotal(formData) {
+            const base = eventPricing.basePrice[formData.eventType];
+            const venue = eventPricing.venuePrice[formData.venue];
+            const guestCost = Math.ceil(formData.guests / 50) * 200;
+            const durationCost = (formData.duration - 4) * 200;
+            const addonsCost = formData.addons.reduce((sum, addon) => 
+                sum + eventPricing.addons[addon], 0);
+
+            return base + venue + guestCost + durationCost + addonsCost;
+        }
+
+        document.getElementById('eventForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                customerName: this.customerName.value,
+                email: this.email.value,
+                eventType: this.eventType.value,
+                guests: parseInt(this.guests.value),
+                date: this.date.value,
+                venue: this.venue.value,
+                duration: parseInt(this.duration.value),
+                addons: Array.from(this.addons)
+                    .filter(checkbox => checkbox.checked)
+                    .map(checkbox => checkbox.value)
+            };
+
+            // Update quotation display
+            document.getElementById('quoteCustomerName').textContent = formData.customerName;
+            document.getElementById('quoteEventType').textContent = 
+                formData.eventType.charAt(0).toUpperCase() + formData.eventType.slice(1);
+            document.getElementById('quoteDate').textContent = 
+                new Date(formData.date).toLocaleDateString();
+            document.getElementById('quoteVenue').textContent = 
+                formData.venue.charAt(0).toUpperCase() + formData.venue.slice(1);
+            document.getElementById('quoteGuests').textContent = formData.guests;
+            document.getElementById('quoteDuration').textContent = `${formData.duration} hours`;
+
+            // Update addons list
+            const addonsList = document.getElementById('quoteAddonsList');
+            addonsList.innerHTML = '';
+            formData.addons.forEach(addon => {
+                const li = document.createElement('li');
+                li.textContent = `${addon.charAt(0).toUpperCase() + addon.slice(1)} - $${eventPricing.addons[addon]}`;
+                addonsList.appendChild(li);
+            });
+
+            // Update total cost
+            document.getElementById('quoteTotalCost').textContent = calculateTotal(formData);
+
+            // Show quotation
+            document.getElementById('quotation').classList.add('show');
+        });
+    </script>
+</body>
+</html>
